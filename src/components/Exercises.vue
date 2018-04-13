@@ -5,6 +5,7 @@
                  v-bind:key="dataIndex"
                  :section="section"
                  :dataProp="dataProp"
+                 :optionNum="optionNum"
                  :sourceData="dataItem"
                  :dataPicked="dataPicked"
                  :dataShowAnswer="dataShowAnswer"></choice-list>
@@ -37,23 +38,24 @@ export default {
       dataProp: [],
       dataPicked: [],
       dataList: [],
-      dataShowAnswer: []
+      dataShowAnswer: [],
+      optionNum: 0
     }
   },
   mounted: function () {
     this.section = this.getSection()
     this.title = jsonData.getSectionDataName(this.getSection())
     this.dataProp = jsonData.getSectionDataProps(this.getSection())
+
+    var optionCount = 0
+    for (var item of this.dataProp) {
+      optionCount += item && item.includes('选项') ? 1 : 0
+    }
+    this.optionNum = optionCount
+
     this.pageInfo.total = Math.round(jsonData.getSectionDataAll(this.getSection()).length / this.pageInfo.pagenum)
     this.dataList = jsonData.getSectionData(this.getSection(), this.pageInfo.current - 1, this.pageInfo.pagenum)
-    if (this.dataList[0][this.dataList[0].length - 1].length === 1) {
-      this.dataPicked = new Array(this.pageInfo.pagenum).fill('')
-      console.log('single')
-    } else {
-      this.dataPicked = new Array(this.pageInfo.pagenum).fill([])
-      console.log('multi')
-      console.log(this.dataPicked)
-    }
+    this.dataPicked = new Array(this.pageInfo.pagenum).fill((this.dataList[0][this.dataList[0].length - 1].length === 1) ? '' : [])
     this.dataShowAnswer = new Array(this.pageInfo.pagenum).fill(false)
   },
   watch: {

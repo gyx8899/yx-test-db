@@ -4,47 +4,32 @@
       <li>{{sourceData[0]}}. {{dataProp[1]}}:</li>
       <li>{{sourceData[1]}}</li>
       <br>
-      <li v-if="type"
-          v-bind:class="{correctAnswer: sourceData[dataProp.length - 1].includes(dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]) && dataPicked[sourceData[0]] !== ''}"
-          v-for="(option, optionIndex) in options"
+      <li v-for="(option, optionIndex) in options"
+          v-bind:class="{correctAnswer: checkIsAnswer(optionIndex) && ((type && dataPicked[sourceData[0]] !== '') || true), showAnswer: dataShowAnswer[sourceData[0]]}"
           v-bind:key="section + '-' +sourceData[0] + '-' + optionIndex"
       >
-        <input type="radio" :id="section + '-' +sourceData[0] + '-' + optionIndex" :value="dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]" v-model="dataPicked[sourceData[0]]">
-        <label :for="section + '-' +sourceData[0] + '-' + optionIndex">{{dataProp[2 + optionIndex]}}: {{option}}</label>
-      </li>
-      <li v-if="!type"
-          v-bind:class="{correctAnswer: sourceData[dataProp.length - 1].includes(dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]), showAnswer: dataShowAnswer[sourceData[0]]}"
-          v-for="(option, optionIndex) in options"
-          v-bind:key="section + '-' +sourceData[0] + '-' + optionIndex"
-      >
-        <input type="checkbox" :id="section + '-' +sourceData[0] + '-' + optionIndex" :value="dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]" v-model="dataPicked[sourceData[0]]">
+        <input :type="type ? 'radio': 'checkbox'" :id="section + '-' +sourceData[0] + '-' + optionIndex" :value="dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]" v-model="dataPicked[sourceData[0]]">
         <label :for="section + '-' +sourceData[0] + '-' + optionIndex">{{dataProp[2 + optionIndex]}}: {{option}}</label>
       </li>
       <br>
-      <template v-if="type">
-        <li v-show="dataPicked[sourceData[0]] !== ''">{{dataProp[dataProp.length - 1]}}: {{sourceData[dataProp.length - 1]}}</li>
-      </template>
-      <template v-if="!type">
-        <li><button @click="showAnswer(sourceData[0])">看答案</button></li>
-        <li v-show="dataShowAnswer[sourceData[0]]">{{dataProp[dataProp.length - 1]}}: {{sourceData[dataProp.length - 1]}}</li>
-      </template>
+      <li v-if="!type"><button @click="showAnswer(sourceData[0])">看答案</button></li>
+      <li v-show="type ? dataPicked[sourceData[0]] : dataShowAnswer[sourceData[0]]">{{prop[2 + optionNum]}}: {{answer}}</li>
     </ul>
     </div>
 </template>
 
 <script>
-// import choice from 'choice.vue'
-//
+
 export default {
   name: 'choice-list',
-  props: ['section', 'dataProp', 'sourceData', 'dataPicked', 'dataShowAnswer'],
+  props: ['section', 'dataProp', 'optionNum', 'sourceData', 'dataPicked', 'dataShowAnswer'],
   data () {
     return {
       type: this.sourceData[this.sourceData.length - 1].length === 1,
       prop: this.dataProp,
       id: this.sourceData[0],
-      options: this.sourceData.slice().splice(2, this.sourceData.length - 3),
-      answer: this.sourceData[this.sourceData.length - 1]
+      options: this.sourceData.slice().splice(2, this.optionNum),
+      answer: this.sourceData[2 + this.optionNum]
     }
   },
   mounted: function () {
@@ -53,6 +38,19 @@ export default {
   methods: {
     showAnswer (index) {
       this.$set(this.dataShowAnswer, (index / 1), true)
+    },
+    checkIsAnswer (optionIndex) {
+      if (this.type) {
+        return this.prop[2 + optionIndex].includes(this.answer)
+      } else {
+        var answers = this.answer.slice()
+        for (var answerItem of answers) {
+          if (this.prop[2 + optionIndex].includes(answerItem)) {
+            return true
+          }
+        }
+        return false
+      }
     }
   },
   components: {
