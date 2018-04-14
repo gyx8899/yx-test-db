@@ -44,7 +44,7 @@ export default {
   },
   mounted: function () {
     this.section = this.getSection()
-    this.title = jsonData.getSectionDataName(this.getSection())
+    this.title = jsonData.getSectionTitle(this.getSection())
     this.dataProp = jsonData.getSectionDataProps(this.getSection())
 
     var optionCount = 0

@@ -39,7 +39,7 @@ function getSectionDataProps (section) {
 }
 
 function getSectionTitle (section) {
-  return section + '类题-' + allSections[section][0].name + '-' + (allSections[section][0].data.length - 1)
+  return section + '类题-' + allSections[section][0].name
 }
 
 function getSectionList (section) {
@@ -59,7 +59,7 @@ function getSectionList (section) {
 
 function getSectionInfo (section) {
   return {
-    title: getSectionTitle(section),
+    title: getSectionTitle(section) + '-' + (allSections[section][0].data.length - 1),
     list: getSectionList(section)
   }
 }
@@ -78,5 +78,6 @@ export default {
   getSectionDataAll: getSectionDataAll,
   getSectionDataName: getSectionDataName,
   getSectionDataProps: getSectionDataProps,
+  getSectionTitle: getSectionTitle,
   getInfoSections: getInfoSections
 }
