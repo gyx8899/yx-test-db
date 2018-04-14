@@ -53,10 +53,10 @@ export default {
     }
     this.optionNum = optionCount
 
-    this.pageInfo.total = Math.round(jsonData.getSectionDataAll(this.getSection()).length / this.pageInfo.pagenum)
+    this.pageInfo.total = Math.round(jsonData.getSectionDataAll(this.getSection()).length)
     this.dataList = jsonData.getSectionData(this.getSection(), this.pageInfo.current - 1, this.pageInfo.pagenum)
-    this.dataPicked = new Array(this.pageInfo.pagenum).fill((this.dataList[0][this.dataList[0].length - 1].length === 1) ? '' : [])
-    this.dataShowAnswer = new Array(this.pageInfo.pagenum).fill(false)
+    this.dataPicked = new Array(this.pageInfo.total).fill((this.dataList[0][this.dataList[0].length - 1].length === 1) ? '' : [])
+    this.dataShowAnswer = new Array(this.pageInfo.total).fill(false)
   },
   watch: {
 
@@ -69,7 +69,22 @@ export default {
       return this.$route.query.type
     },
     pagechange: function (current) {
-      this.dataList = jsonData.getSectionData(this.getSection(), current - 1, this.pageInfo.pagenum)
+      this.dataList.splice(0, this.pageInfo.pagenum, ...(jsonData.getSectionData(this.getSection(), current - 1, this.pageInfo.pagenum)))
+      this.scrollToTop(500)
+    },
+    scrollToTop: function (scrollDuration) {
+      let cosParameter = window.scrollY / 2,
+        scrollCount = 0,
+        oldTimestamp = performance.now()
+      function step (newTimestamp) {
+        scrollCount += Math.PI / (scrollDuration / (newTimestamp - oldTimestamp))
+        if (scrollCount >= Math.PI) window.scrollTo(0, 0)
+        if (window.scrollY === 0) return
+        window.scrollTo(0, Math.round(cosParameter + cosParameter * Math.cos(scrollCount)))
+        oldTimestamp = newTimestamp
+        window.requestAnimationFrame(step)
+      }
+      window.requestAnimationFrame(step)
     }
   },
   components: {

@@ -1,19 +1,19 @@
 <template>
   <div>
-    <ul v-bind:class="{multiOption: !type}">
+    <ul v-bind:class="{multiOption: !(sourceData[sourceData.length - 1].length === 1)}">
       <li>{{sourceData[0]}}. {{dataProp[1]}}:</li>
       <li>{{sourceData[1]}}</li>
       <br>
-      <li v-for="(option, optionIndex) in options"
-          v-bind:class="{correctAnswer: checkIsAnswer(optionIndex) && ((type && dataPicked[sourceData[0]] !== '') || true), showAnswer: dataShowAnswer[sourceData[0]]}"
+      <li v-for="(option, optionIndex) in sourceData.slice().splice(2, optionNum)"
+          v-bind:class="{correctAnswer: checkIsAnswer(optionIndex) && (((sourceData[sourceData.length - 1].length === 1) && dataPicked[sourceData[0] - 1] !== '') || true), showAnswer: dataShowAnswer[sourceData[0]]}"
           v-bind:key="section + '-' +sourceData[0] + '-' + optionIndex"
       >
-        <input :type="type ? 'radio': 'checkbox'" :id="section + '-' +sourceData[0] + '-' + optionIndex" :value="dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]" v-model="dataPicked[sourceData[0]]">
+        <input :type="(sourceData[sourceData.length - 1].length === 1) ? 'radio': 'checkbox'" :id="section + '-' +sourceData[0] + '-' + optionIndex" :value="dataProp[2 + optionIndex][dataProp[2 + optionIndex].length - 1]" v-model="dataPicked[sourceData[0] - 1]">
         <label :for="section + '-' +sourceData[0] + '-' + optionIndex">{{dataProp[2 + optionIndex]}}: {{option}}</label>
       </li>
       <br>
-      <li v-if="!type"><button @click="showAnswer(sourceData[0])">看答案</button></li>
-      <li v-show="type ? dataPicked[sourceData[0]] : dataShowAnswer[sourceData[0]]">{{prop[2 + optionNum]}}: {{answer}}</li>
+      <li v-if="!(sourceData[sourceData.length - 1].length === 1)"><button @click="showAnswer(sourceData[0])">看答案</button></li>
+      <li v-show="(sourceData[sourceData.length - 1].length === 1) ? dataPicked[sourceData[0] - 1] : dataShowAnswer[sourceData[0]]">{{dataProp[2 + optionNum]}}: {{sourceData[2 + optionNum]}}</li>
     </ul>
     </div>
 </template>
@@ -25,11 +25,10 @@ export default {
   props: ['section', 'dataProp', 'optionNum', 'sourceData', 'dataPicked', 'dataShowAnswer'],
   data () {
     return {
-      type: this.sourceData[this.sourceData.length - 1].length === 1,
-      prop: this.dataProp,
-      id: this.sourceData[0],
-      options: this.sourceData.slice().splice(2, this.optionNum),
-      answer: this.sourceData[2 + this.optionNum]
+      // type: this.sourceData[this.sourceData.length - 1].length === 1,
+      // prop: this.dataProp,
+      // options: this.sourceData.slice().splice(2, this.optionNum),
+      // answer: this.sourceData[2 + this.optionNum]
     }
   },
   mounted: function () {
@@ -41,11 +40,11 @@ export default {
     },
     checkIsAnswer (optionIndex) {
       if (this.type) {
-        return this.prop[2 + optionIndex].includes(this.answer)
+        return this.dataProp[2 + optionIndex].includes(this.sourceData[2 + this.optionNum])
       } else {
-        var answers = this.answer.slice()
+        var answers = this.sourceData[2 + this.optionNum].slice()
         for (var answerItem of answers) {
-          if (this.prop[2 + optionIndex].includes(answerItem)) {
+          if (this.dataProp[2 + optionIndex].includes(answerItem)) {
             return true
           }
         }
