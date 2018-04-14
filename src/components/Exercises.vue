@@ -73,7 +73,7 @@ export default {
       this.scrollToTop(500)
     },
     scrollToTop: function (scrollDuration) {
-      let cosParameter = window.scrollY / 2,
+      var cosParameter = window.scrollY / 2,
         scrollCount = 0,
         oldTimestamp = performance.now()
       function step (newTimestamp) {
