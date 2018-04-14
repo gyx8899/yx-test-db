@@ -1,5 +1,6 @@
 <template>
   <div class="hello">
+    <img src="../assets/logo.jpg">
     <h1>{{ title }}</h1>
     <info-list v-for="infoSection in infoSections" v-bind:key="infoSection.title"
                :sectionData="infoSection"
